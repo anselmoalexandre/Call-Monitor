@@ -37,6 +37,9 @@ android {
     buildFeatures {
         viewBinding true
     }
+    packagingOptions {
+        exclude 'META-INF/*'
+    }
 }
 
 dependencies {
@@ -46,6 +49,11 @@ dependencies {
     implementation(Dependencies.AndroidX.constraintLayout)
     implementation(Dependencies.AndroidX.Navigation.navigationFragment)
     implementation(Dependencies.AndroidX.Navigation.navigationUI)
+
+    // Ktor server
+    implementation(Dependencies.Ktor.ktor)
+    implementation(Dependencies.Ktor.ktorServer)
+    implementation(Dependencies.Ktor.ktorGson)
 
     testImplementation(Dependencies.Test.JUnit)
     androidTestImplementation(Dependencies.Test.coreTestExtenstion)
