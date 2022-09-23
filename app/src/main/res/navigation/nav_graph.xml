@@ -8,15 +8,5 @@
     <fragment
         android:id="@+id/firstFragment"
         android:name="mz.co.bilheteira.callmonitor.ui.CallLogFragment"
-        tools:layout="@layout/fragment_call_log">
-
-        <action
-            android:id="@+id/toSecondFragment"
-            app:destination="@id/secondFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/secondFragment"
-        android:name="mz.co.bilheteira.callmonitor.SecondFragment"
-        tools:layout="@layout/fragment_second" />
+        tools:layout="@layout/fragment_call_log" />
 </navigation>

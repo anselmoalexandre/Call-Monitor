@@ -6,7 +6,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
 import mz.co.bilheteira.callmonitor.db.dao.LogDao
-import mz.co.bilheteira.callmonitor.db.dao.RootDao
 import mz.co.bilheteira.callmonitor.db.dao.ServiceDao
 import mz.co.bilheteira.callmonitor.db.dao.StatusDao
 import mz.co.bilheteira.callmonitor.repository.CallMonitorRepository
@@ -20,8 +19,7 @@ object RepositoryModule {
     @ViewModelScoped
     fun provideRepository(
         logDao: LogDao,
-        rootDao: RootDao,
         serviceDao: ServiceDao,
         statusDao: StatusDao
-    ): CallMonitorRepository = CallMonitorRepositoryImpl(logDao, rootDao, serviceDao, statusDao)
+    ): CallMonitorRepository = CallMonitorRepositoryImpl(logDao, serviceDao, statusDao)
 }

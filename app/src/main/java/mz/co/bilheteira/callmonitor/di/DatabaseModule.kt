@@ -26,9 +26,6 @@ object DatabaseModule {
     fun provideLogDao(db: CallMonitorDatabase) = db.getLogDao()
 
     @Provides
-    fun provideRootDao(db: CallMonitorDatabase) = db.getRootDao()
-
-    @Provides
     fun provideServiceDao(db: CallMonitorDatabase) = db.getServiceDao()
 
     @Provides

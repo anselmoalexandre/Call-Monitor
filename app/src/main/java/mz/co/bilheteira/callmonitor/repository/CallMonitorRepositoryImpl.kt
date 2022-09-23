@@ -1,18 +1,15 @@
 package mz.co.bilheteira.callmonitor.repository
 
 import mz.co.bilheteira.callmonitor.db.dao.LogDao
-import mz.co.bilheteira.callmonitor.db.dao.RootDao
 import mz.co.bilheteira.callmonitor.db.dao.ServiceDao
 import mz.co.bilheteira.callmonitor.db.dao.StatusDao
 import mz.co.bilheteira.callmonitor.db.entities.Log
-import mz.co.bilheteira.callmonitor.db.entities.Root
 import mz.co.bilheteira.callmonitor.db.entities.Service
 import mz.co.bilheteira.callmonitor.db.entities.Status
 import javax.inject.Inject
 
 class CallMonitorRepositoryImpl @Inject constructor(
     private val logDao: LogDao,
-    private val rootDao: RootDao,
     private val serviceDao: ServiceDao,
     private val statusDao: StatusDao
 ) : CallMonitorRepository {
@@ -27,8 +24,6 @@ class CallMonitorRepositoryImpl @Inject constructor(
     override suspend fun insertStatus(status: Status) = statusDao.insertStatus(status)
 
     override suspend fun deleteStatus(status: Status) = statusDao.deleteStatus(status)
-
-    override suspend fun getRoot(): Root? = rootDao.getRoot()
 
     override suspend fun getService(): List<Service> =  serviceDao.getServices()
 
