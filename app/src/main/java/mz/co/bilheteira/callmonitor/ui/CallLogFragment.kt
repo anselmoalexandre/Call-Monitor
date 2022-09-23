@@ -73,6 +73,7 @@ class CallLogFragment : Fragment() {
                 CallMonitorViewModel.CallMonitorUIState.Success -> renderSuccess()
                 is CallMonitorViewModel.CallMonitorUIState.Content -> renderLogs(it.logs)
                 is CallMonitorViewModel.CallMonitorUIState.Error -> renderError(it.message)
+                else -> {}
             }
         }
     }
