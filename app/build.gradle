@@ -1,15 +1,22 @@
+import mz.co.bilheteira.buildsrc.BuildVersions
+import mz.co.bilheteira.buildsrc.Dependencies
+
 plugins {
     id 'com.android.application'
+    id 'com.google.dagger.hilt.android'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
-    compileSdk 32
+    compileSdk(BuildVersions.compileSDK)
 
     defaultConfig {
         applicationId "mz.co.bilheteira.callmonitor"
-        minSdk 24
-        targetSdk 32
+
+        minSdk(BuildVersions.minSDK)
+        targetSdk(BuildVersions.targetSDK)
+
         versionCode 1
         versionName "1.0"
 
@@ -32,17 +39,47 @@ android {
     buildFeatures {
         viewBinding true
     }
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/*.kotlin_module']
+        }
+        exclude 'META-INF/*'
+    }
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.5.0-alpha04'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.2'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation(Dependencies.AndroidX.core)
+    implementation(Dependencies.AndroidX.appCompat)
+    implementation(Dependencies.Material.mdc)
+    implementation(Dependencies.AndroidX.constraintLayout)
+    implementation(Dependencies.AndroidX.Navigation.navigationFragment)
+    implementation(Dependencies.AndroidX.Navigation.navigationUI)
+
+    implementation "androidx.activity:activity-ktx:1.6.0"
+
+    // Room
+    implementation(Dependencies.Room.room)
+    implementation(Dependencies.Room.runtime)
+    kapt(Dependencies.Room.kapt)
+    kapt(Dependencies.Room.annotationProcessor)
+
+    // Hilt
+    implementation(Dependencies.Dagger.hilt)
+    kapt(Dependencies.Dagger.kapt)
+
+    implementation "org.apache.commons:commons-io:1.3.2"
+
+    // Ktor server
+    implementation(Dependencies.Ktor.ktor)
+    implementation(Dependencies.Ktor.ktorServer)
+    implementation(Dependencies.Ktor.ktorGson)
+
+    testImplementation(Dependencies.Test.junit)
+    testImplementation(Dependencies.Test.expresso)
+    testImplementation(Dependencies.Test.mockkandroid)
+    testImplementation(Dependencies.Test.mockkagent)
+    testImplementation(Dependencies.Test.truth)
+    testImplementation(Dependencies.Test.coroutines)
 }

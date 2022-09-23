@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ToolbarItemTextAppearance">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?attr/textAppearanceHeadline6</item>
+    </style>
+
+    <style name="Theme.CallMonitor.TextAppearance.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/rajdhani</item>
+        <item name="android:fontFamily">@font/rajdhani</item>
+    </style>
+
+    <style name="Theme.CallMonitor.TextAppearance.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/rajdhani</item>
+        <item name="android:fontFamily">@font/rajdhani</item>
+    </style>
+
+    <style name="Theme.CallMonitor.TextAppearance.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/rajdhani</item>
+        <item name="android:fontFamily">@font/rajdhani</item>
+    </style>
+</resources>
