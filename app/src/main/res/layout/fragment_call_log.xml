@@ -35,16 +35,42 @@
             android:padding="16dp">
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ipAddress"
+                style="@style/Theme.CallMonitor.TextAppearance.BodyLarge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/ip_address"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/portNumber"
+                style="@style/Theme.CallMonitor.TextAppearance.BodyLarge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/port_number"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/ipAddress" />
+
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/recents"
                 style="@style/Theme.CallMonitor.TextAppearance.Title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:text="Recents"
+                android:layout_marginTop="20dp"
+                android:text="@string/recents"
                 app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
                 app:layout_constraintStart_toStartOf="@id/guidelineStart"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/portNumber" />
 
             <View
                 android:id="@+id/view"
