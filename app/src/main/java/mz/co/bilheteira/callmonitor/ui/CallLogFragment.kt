@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import mz.co.bilheteira.callmonitor.data.Log
 import mz.co.bilheteira.callmonitor.databinding.FragmentCallLogBinding
+import java.net.NetworkInterface
 
 @AndroidEntryPoint
 class CallLogFragment : Fragment() {
@@ -45,25 +46,28 @@ class CallLogFragment : Fragment() {
         setupData()
         setupAdapter()
         setupObservers()
-        setupClickListeners()
 
-        binding.apply {
-//            buttonFirst.setOnClickListener {
-//                findNavController().navigate(R.id.toSecondFragment)
-//            }
-        }
+        val localIpAddress = getInternetProtocol()
+        localIpAddress?.let { ip ->
+            "IP Address: $ip".also {
+                binding.apply {
+                    ipAddress.text = it
+                    ipAddress.isVisible = true
+                }
+            }
+            "Port Number: 8080".also {
+                binding.apply {
+                    portNumber.text = it
+                    portNumber.isVisible = true
+                }
+            }
+        } ?: Toast.makeText(requireContext(), "IP not available", Toast.LENGTH_SHORT).show()
     }
 
     private fun setupData() = viewModel.setupData()
 
     private fun setupAdapter() {
         binding.recycler.adapter = adp
-    }
-
-    private fun setupClickListeners() = binding.apply {
-//        buttonFirst.setOnClickListener {
-//
-//        }
     }
 
     private fun setupObservers() {
@@ -102,10 +106,27 @@ class CallLogFragment : Fragment() {
         Toast.LENGTH_SHORT
     ).show()
 
-    private fun renderLogs(cachedLogs: List<Log>) = binding.apply{
+    private fun renderLogs(cachedLogs: List<Log>) = binding.apply {
         recycler.isVisible = true
         adp.submitItems(cachedLogs)
     }
+
+    private fun getInternetProtocol(): String? {
+        val networkInterfaces = NetworkInterface.getNetworkInterfaces().iterator().asSequence()
+        val localAddress = networkInterfaces.flatMap {
+            it.inetAddresses.asSequence()
+                .filter { inetAddress ->
+                    inetAddress.isSiteLocalAddress && inetAddress.hostAddress?.let { hostAddress ->
+                        !hostAddress.contains(":")
+                    } ?: false && inetAddress.hostAddress != "127.0.0.1"
+                }
+                .map { inetAddress ->
+                    inetAddress.hostAddress
+                }
+        }
+        return localAddress.firstOrNull()
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
