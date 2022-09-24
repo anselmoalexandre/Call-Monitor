@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import mz.co.bilheteira.callmonitor.data.Root
 import mz.co.bilheteira.callmonitor.data.Service as DomainService
 import mz.co.bilheteira.callmonitor.data.Status as DomainStatus
 import mz.co.bilheteira.callmonitor.db.entities.Log
@@ -109,6 +110,58 @@ class CallMonitorViewModel @Inject constructor(
         }
     }
 
+    fun fetchRoot() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val cachedServices = callMonitorRepository.getService()
+
+            val domainService = cachedServices.map {
+                DomainService(
+                    id = it.id,
+                    name = it.name,
+                    uri = it.uri
+                )
+            }
+            val root = Root(
+                start = Calendar.getInstance().time.toString(),
+                services = domainService
+            )
+
+            _uiState.postValue(CallMonitorUIState.RootContent(root = root))
+        }
+    }
+
+    fun fetchStatus() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val cachedStatus = callMonitorRepository.getStatus().map {
+                DomainStatus(
+                    id = it.id,
+                    ongoing = it.ongoing,
+                    number = it.number,
+                    name = it.name
+                )
+            }
+
+            _uiState.postValue(CallMonitorUIState.StatusContent(status = cachedStatus))
+        }
+    }
+
+    fun fetchLog() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val cachedLog = callMonitorRepository.getLog().map {
+                DomainLog(
+                    id = it.id,
+                    beginning = it.beginning,
+                    duration = it.duration,
+                    number = it.number,
+                    name = it.name,
+                    timesQueried = it.timesQueried
+                )
+            }
+
+            _uiState.postValue(CallMonitorUIState.LogContent(log = cachedLog))
+        }
+    }
+
     private fun DomainLog.toLogEntity(): Log = Log(
         id = this.id,
         beginning = this.beginning,
@@ -134,7 +187,10 @@ class CallMonitorViewModel @Inject constructor(
     sealed class CallMonitorUIState {
         object Loading : CallMonitorUIState()
         object Success : CallMonitorUIState()
-        data class Content(val logs: List<DomainLog>) : CallMonitorUIState()
         data class Error(val message: String) : CallMonitorUIState()
+        data class RootContent(val root: Root) : CallMonitorUIState()
+        data class Content(val logs: List<DomainLog>) : CallMonitorUIState()
+        data class LogContent(val log: List<DomainLog>) : CallMonitorUIState()
+        data class StatusContent(val status: List<DomainStatus>) : CallMonitorUIState()
     }
 }

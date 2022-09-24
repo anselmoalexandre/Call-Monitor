@@ -14,4 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Call Monitor"
 include ':app'
-include ':server'
