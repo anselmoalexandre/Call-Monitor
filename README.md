@@ -25,6 +25,7 @@ Call Monitor app exposes call logs as an API which allow clients from the same n
 consume these logs.
 
 The are 3 API endpoint which exposes log `status`, `log` and `services`.
+
 `Important notes before starting:`
 ```
 * Start/Stop the server to when you want to start/stop exposing the API log into the network
