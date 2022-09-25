@@ -5,4 +5,7 @@
 
     <color name="color_grey_300">#e0e0e0</color>
     <color name="color_grey_700">#616161</color>
+
+    <color name="color_red_a700">#D50000</color>
+    <color name="color_green_500">#4CAF50</color>
 </resources>

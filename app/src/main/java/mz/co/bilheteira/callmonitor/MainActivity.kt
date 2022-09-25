@@ -1,5 +1,6 @@
 package mz.co.bilheteira.callmonitor
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -98,13 +99,32 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() = binding.apply {
         fab.setOnClickListener {
-            if (isServerRunning) {
-                isServerRunning = false
-                stopServer()
-            } else {
-                isServerRunning = true
+            if (!isServerRunning) {
+                isServerRunning = !isServerRunning
                 startServer()
+            } else {
+                isServerRunning = !isServerRunning
+                stopServer()
             }
+
+            changeFabColor()
+        }
+    }
+
+    private fun changeFabColor() = binding.apply {
+        when (isServerRunning) {
+            true -> fab.backgroundTintList = ColorStateList.valueOf(
+                resources.getColor(
+                    R.color.color_green_500,
+                    applicationContext.theme
+                )
+            )
+            false -> fab.backgroundTintList = ColorStateList.valueOf(
+                resources.getColor(
+                    R.color.color_red_a700,
+                    applicationContext.theme
+                )
+            )
         }
     }
 
@@ -130,7 +150,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopServer() = CoroutineScope(Dispatchers.IO).launch {
-        server.stop(gracePeriod = 100L, timeout = 2000L, TimeUnit.MILLISECONDS)
+        server.stop(gracePeriod = 10L, timeout = 20L, TimeUnit.MILLISECONDS)
     }
 
     override fun onDestroy() {
