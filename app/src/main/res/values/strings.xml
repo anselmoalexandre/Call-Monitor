@@ -6,4 +6,7 @@
     <string name="recents">Recents</string>
     <string name="ip_address">IP Address:</string>
     <string name="port_number">Port Number:</string>
+    <string name="start">Start</string>
+    <string name="stop">Stopped</string>
+    <string name="running">Running</string>
 </resources>
