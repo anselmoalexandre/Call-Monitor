@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: CallMonitorViewModel by viewModels()
 
     private val server by lazy {
-        embeddedServer(Netty, port = 12435, configure = {
+        embeddedServer(Netty, port = 8080, configure = {
             connectionGroupSize = 3
             workerGroupSize = 3
             callGroupSize = 5
