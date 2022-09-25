@@ -50,15 +50,9 @@ object Dependencies {
     }
 
     object Test {
-        const val coreTest = "androidx.test:core:1.4.0"
-        const val coreTestExtenstion = "androidx.test.ext:junit:1.1.3"
-        const val JUnit = "junit:junit:4.13.2"
         const val junit = "androidx.test.ext:junit:1.1.3"
-        const val hamcrest = "org.hamcrest:hamcrest-all:1.3"
-        const val coreTesting = "androidx.arch.core:core-testing:2.1.0"
         const val mockkandroid = "io.mockk:mockk-android:1.12.3"
         const val mockkagent = "io.mockk:mockk-agent-jvm:1.12.3"
-        const val roboeletric = "org.robolectric:robolectric:4.3.1"
         const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.2"
         const val truth = "com.google.truth:truth:1.0.1"
         const val expresso = "androidx.test.espresso:espresso-core:3.4.0"

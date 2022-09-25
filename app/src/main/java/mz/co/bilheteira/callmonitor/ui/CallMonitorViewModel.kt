@@ -8,16 +8,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mz.co.bilheteira.callmonitor.data.Root
-import mz.co.bilheteira.callmonitor.data.Service as DomainService
-import mz.co.bilheteira.callmonitor.data.Status as DomainStatus
 import mz.co.bilheteira.callmonitor.db.entities.Log
 import mz.co.bilheteira.callmonitor.db.entities.Service
 import mz.co.bilheteira.callmonitor.db.entities.Status
-import mz.co.bilheteira.callmonitor.data.Log as DomainLog
 import mz.co.bilheteira.callmonitor.repository.CallMonitorRepository
 import java.util.*
 import javax.inject.Inject
+import mz.co.bilheteira.callmonitor.data.Log as DomainLog
+import mz.co.bilheteira.callmonitor.data.Service as DomainService
+import mz.co.bilheteira.callmonitor.data.Status as DomainStatus
 
 @HiltViewModel
 class CallMonitorViewModel @Inject constructor(
@@ -89,45 +90,44 @@ class CallMonitorViewModel @Inject constructor(
         }
     }
 
-    fun fetchCachedLog() {
-        _uiState.value = CallMonitorUIState.Loading
-        viewModelScope.launch(Dispatchers.IO) {
-            val cachedLog = callMonitorRepository.getLog()
-            if (cachedLog.isNotEmpty()) {
-                val domainLog = cachedLog.map {
-                    DomainLog(
-                        id = it.id,
-                        beginning = it.beginning,
-                        duration = it.duration,
-                        number = it.number,
-                        name = it.name,
-                        timesQueried = it.timesQueried
-                    )
-                }
-
-                _uiState.postValue(CallMonitorUIState.Content(logs = domainLog))
-            } else _uiState.postValue(CallMonitorUIState.Error("No logs found"))
+    fun fetchCachedLog() = viewModelScope.launch {
+        val cachedLog = withContext(Dispatchers.IO) {
+            callMonitorRepository.getLog()
         }
-    }
-
-    fun fetchRoot() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val cachedServices = callMonitorRepository.getService()
-
-            val domainService = cachedServices.map {
-                DomainService(
+        if (cachedLog.isNotEmpty()) {
+            val domainLog = cachedLog.map {
+                DomainLog(
                     id = it.id,
+                    beginning = it.beginning,
+                    duration = it.duration,
+                    number = it.number,
                     name = it.name,
-                    uri = it.uri
+                    timesQueried = it.timesQueried
                 )
             }
-            val root = Root(
-                start = Calendar.getInstance().time.toString(),
-                services = domainService
-            )
 
-            _uiState.postValue(CallMonitorUIState.RootContent(root = root))
+            _uiState.value = CallMonitorUIState.Content(logs = domainLog)
+        } else _uiState.value = CallMonitorUIState.Error("No logs found")
+    }
+
+    fun fetchRoot() = viewModelScope.launch {
+        val cachedServices = withContext(Dispatchers.IO) {
+            callMonitorRepository.getService()
         }
+
+        val domainService = cachedServices.map {
+            DomainService(
+                id = it.id,
+                name = it.name,
+                uri = it.uri
+            )
+        }
+        val root = Root(
+            start = Calendar.getInstance().time.toString(),
+            services = domainService
+        )
+
+        _uiState.value = CallMonitorUIState.RootContent(root = root)
     }
 
     fun fetchStatus() {

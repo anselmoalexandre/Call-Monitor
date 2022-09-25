@@ -14,14 +14,14 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import mz.co.bilheteira.callmonitor.data.Log
 import mz.co.bilheteira.callmonitor.data.Root
 import mz.co.bilheteira.callmonitor.data.Status
 import mz.co.bilheteira.callmonitor.databinding.ActivityMainBinding
 import mz.co.bilheteira.callmonitor.ui.CallMonitorViewModel
+import timber.log.Timber
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -29,22 +29,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var root: Root
-    private val log = mutableListOf<Log>()
+    private val cachedLogs = mutableListOf<Log>()
     private val status = mutableListOf<Status>()
 
     private val viewModel: CallMonitorViewModel by viewModels()
 
     private val server by lazy {
-        embeddedServer(Netty, port = 8080, configure = {
-            connectionGroupSize = 3
-            workerGroupSize = 3
-            callGroupSize = 5
-        }) {
+        embeddedServer(Netty, port = PORT) {
             install(CallLogging)
 
             routing {
-                route("/") {
-                    get {
+                route("/", HttpMethod.Get) {
+                    handle {
                         call.respondText(
                             Gson().toJson(root).toString(),
                             ContentType.Application.Json
@@ -52,8 +48,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                route("/status") {
-                    get {
+                route("/status", HttpMethod.Get) {
+                    handle {
                         call.respondText(
                             Gson().toJson(status).toString(),
                             ContentType.Application.Json
@@ -61,10 +57,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                route("/log") {
-                    get {
+                route("/log", HttpMethod.Get) {
+                    handle {
                         call.respondText(
-                            Gson().toJson(log).toString(),
+                            Gson().toJson(cachedLogs).toString(),
                             ContentType.Application.Json
                         )
                     }
@@ -98,28 +94,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListener() = binding.apply {
-        fab.setOnClickListener {
-            if (!isServerRunning) {
-                isServerRunning = !isServerRunning
+        extFab.setOnClickListener {
+            isServerRunning = if (!isServerRunning) {
                 startServer()
+                !isServerRunning
             } else {
-                isServerRunning = !isServerRunning
                 stopServer()
+                !isServerRunning
             }
 
+            changeFabText()
             changeFabColor()
+        }
+    }
+
+    private fun changeFabText() = binding.apply {
+        when (isServerRunning) {
+            true -> extFab.text = getText(R.string.running)
+            false -> extFab.text = getText(R.string.stop)
         }
     }
 
     private fun changeFabColor() = binding.apply {
         when (isServerRunning) {
-            true -> fab.backgroundTintList = ColorStateList.valueOf(
+            true -> extFab.backgroundTintList = ColorStateList.valueOf(
                 resources.getColor(
                     R.color.color_green_500,
                     applicationContext.theme
                 )
             )
-            false -> fab.backgroundTintList = ColorStateList.valueOf(
+            false -> extFab.backgroundTintList = ColorStateList.valueOf(
                 resources.getColor(
                     R.color.color_red_a700,
                     applicationContext.theme
@@ -129,12 +133,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun exposeLog(cachedLog: List<Log>) {
-        log.clear()
-        log.addAll(cachedLog)
+        cachedLogs.clear()
+        cachedLogs.addAll(cachedLog)
     }
 
     private fun exposeRoot(cachedRoot: Root) {
-        root = cachedRoot
+        if (!::root.isInitialized) root = cachedRoot
     }
 
     private fun exposeStatus(cachedStatus: List<Status>) {
@@ -144,9 +148,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun startServer() = CoroutineScope(Dispatchers.IO).launch {
         viewModel.fetchRoot()
+        delay(500)
         viewModel.fetchLog()
+        delay(500)
         viewModel.fetchStatus()
-        server.start(wait = true)
+
+        try {
+            server.start(wait = true)
+        } catch (e: RejectedExecutionException) {
+            Timber.e(e.message)
+            server.start()
+        }
     }
 
     private fun stopServer() = CoroutineScope(Dispatchers.IO).launch {
@@ -156,5 +168,9 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         stopServer()
         super.onDestroy()
+    }
+
+    companion object {
+        private const val PORT = 8080
     }
 }

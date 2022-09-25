@@ -76,6 +76,9 @@ dependencies {
     implementation(Dependencies.Ktor.ktorServer)
     implementation(Dependencies.Ktor.ktorGson)
 
+    // Timber
+    implementation(Dependencies.Timber.timber)
+
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Test.expresso)
     testImplementation(Dependencies.Test.mockkandroid)
